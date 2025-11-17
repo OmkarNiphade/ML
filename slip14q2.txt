@@ -1,0 +1,23 @@
+import pandas as pd
+
+# Create your own dataset
+data = {
+    "Name": ["Amit", "Riya", None, "John"],
+    "Age": [25, None, 30, 22],
+    "City": ["Pune", "Mumbai", "Delhi", None]
+}
+
+df = pd.DataFrame(data)
+
+print("Original Dataset:")
+print(df)
+
+# Find null values
+print("\nNull Values Count:")
+print(df.isnull().sum())
+
+# Remove rows containing null values
+df_clean = df.dropna()
+
+print("\nDataset After Removing Null Values:")
+print(df_clean)

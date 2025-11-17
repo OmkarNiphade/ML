@@ -1,0 +1,51 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score
+
+# -----------------------------
+# 1. Load dataset
+# -----------------------------
+df = pd.read_csv("UniversalBank.csv")
+
+# Remove ID column if present
+if "ID" in df.columns:
+    df = df.drop("ID", axis=1)
+
+# Remove ZIP Code column if present (not useful)
+if "ZIP Code" in df.columns:
+    df = df.drop("ZIP Code", axis=1)
+
+# Target variable (example: Personal Loan)
+y = df["Personal Loan"]
+
+# Features (remove target)
+X = df.drop("Personal Loan", axis=1)
+
+# -----------------------------
+# 2. Train–test split
+# -----------------------------
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=0
+)
+
+# -----------------------------
+# 3. Scale features
+# -----------------------------
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# -----------------------------
+# 4. Linear SVM Model
+# -----------------------------
+model = SVC(kernel='linear')
+model.fit(X_train, y_train)
+
+# -----------------------------
+# 5. Predictions + Accuracy
+# -----------------------------
+pred = model.predict(X_test)
+print("Accuracy:", accuracy_score(y_test, pred))
+print("Predictions (first 10):", pred[:10])

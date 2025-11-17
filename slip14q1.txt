@@ -1,0 +1,54 @@
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
+from tensorflow.keras.preprocessing import image
+
+# ----------------------------
+# 1. Load MNIST dataset
+# ----------------------------
+(X_train, y_train), (X_test, y_test) = mnist.load_data()
+
+# Reshape + normalize
+X_train = X_train.reshape(-1, 28, 28, 1) / 255.0
+X_test  = X_test.reshape(-1, 28, 28, 1) / 255.0
+
+# ----------------------------
+# 2. Build CNN model
+# ----------------------------
+model = Sequential([
+    Conv2D(32, (3,3), activation='relu', input_shape=(28,28,1)),
+    MaxPooling2D((2,2)),
+    Conv2D(64, (3,3), activation='relu'),
+    MaxPooling2D((2,2)),
+    Flatten(),
+    Dense(128, activation='relu'),
+    Dense(10, activation='softmax')  # 10 digits
+])
+
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+# ----------------------------
+# 3. Train the model
+# ----------------------------
+model.fit(X_train, y_train, epochs=3, batch_size=32)
+
+# ----------------------------
+# 4. Evaluate
+# ----------------------------
+loss, acc = model.evaluate(X_test, y_test)
+print("Test Accuracy:", acc)
+
+# ----------------------------
+# 5. Predict digit from external image
+# ----------------------------
+def predict_digit(img_path):
+    img = image.load_img(img_path, color_mode='grayscale', target_size=(28,28))
+    img = image.img_to_array(img)
+    img = img.reshape(1, 28, 28, 1) / 255.0
+    pred = model.predict(img)
+    return np.argmax(pred)
+
+# Example usage
+print("Predicted Digit:", predict_digit("digit.png"))  # replace with your image

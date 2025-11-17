@@ -1,0 +1,27 @@
+import pandas as pd
+from mlxtend.frequent_patterns import apriori, association_rules
+
+# Sample groceries dataset (each row = items bought together)
+data = [
+    ['Milk', 'Bread', 'Butter'],
+    ['Bread', 'Butter'],
+    ['Milk', 'Bread'],
+    ['Milk', 'Butter'],
+    ['Bread', 'Butter'],
+]
+
+# Convert list into one-hot encoded DataFrame
+df = pd.DataFrame(data, columns=['Item1', 'Item2', 'Item3']).fillna('-')
+
+basket = pd.get_dummies(df.stack()).groupby(level=0).sum()
+
+# Run Apriori with minimum support = 0.25
+frequent_items = apriori(basket, min_support=0.25, use_colnames=True)
+
+print("Frequent Itemsets:")
+print(frequent_items)
+
+# Generate association rules
+rules = association_rules(frequent_items, metric="lift", min_threshold=1)
+print("\nAssociation Rules:")
+print(rules[['antecedents', 'consequents', 'support', 'confidence', 'lift']])

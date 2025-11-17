@@ -1,0 +1,20 @@
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+# Load dataset
+df = pd.read_csv("Salary_positions.csv")
+
+# Separate features (Level) and target (Salary)
+X = df[["Level"]]      # independent variable
+y = df["Salary"]       # dependent variable
+
+# Train simple linear regression model
+model = LinearRegression()
+model.fit(X, y)
+
+# Predictions
+level_11 = model.predict([[11]])
+level_12 = model.predict([[12]])
+
+print("Predicted Salary for Level 11 =", level_11[0])
+print("Predicted Salary for Level 12 =", level_12[0])

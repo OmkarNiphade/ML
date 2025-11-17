@@ -1,0 +1,29 @@
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import AgglomerativeClustering
+import matplotlib.pyplot as plt
+
+# Load dataset
+df = pd.read_csv("Wholesale_Customers.csv")
+
+# Select annual spending columns
+X = df[["Fresh", "Milk", "Grocery", "Frozen", "Detergents_Paper", "Delicassen"]]
+
+# Standardize data
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Agglomerative Clustering (3 clusters example)
+model = AgglomerativeClustering(n_clusters=3, linkage='ward')
+labels = model.fit_predict(X_scaled)
+
+# Add cluster labels to dataset
+df["Cluster"] = labels
+print(df.head())
+
+# Plot two features for visualization
+plt.scatter(df["Fresh"], df["Milk"], c=df["Cluster"])
+plt.xlabel("Fresh")
+plt.ylabel("Milk")
+plt.title("Agglomerative Clustering - Wholesale Customers")
+plt.show()

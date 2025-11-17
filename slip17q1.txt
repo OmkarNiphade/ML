@@ -1,0 +1,78 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
+# Ensemble Models
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, VotingClassifier, StackingClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+
+# -------------------------------
+# 1. Load Pima Diabetes Dataset
+# -------------------------------
+df = pd.read_csv("diabetes.csv")   # ensure this file exists
+
+X = df.drop("Outcome", axis=1)
+y = df["Outcome"]
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=0
+)
+
+# -------------------------------
+# 2. BAGGING → Random Forest
+# -------------------------------
+rf = RandomForestClassifier(n_estimators=100, random_state=0)
+rf.fit(X_train, y_train)
+pred_rf = rf.predict(X_test)
+acc_rf = accuracy_score(y_test, pred_rf)
+
+# -------------------------------
+# 3. BOOSTING → AdaBoost
+# -------------------------------
+ada = AdaBoostClassifier(n_estimators=100, random_state=0)
+ada.fit(X_train, y_train)
+pred_ada = ada.predict(X_test)
+acc_ada = accuracy_score(y_test, pred_ada)
+
+# -------------------------------
+# 4. VOTING CLASSIFIER
+# -------------------------------
+voting = VotingClassifier(
+    estimators=[
+        ('lr', LogisticRegression()),
+        ('svc', SVC(probability=True)),
+        ('dt', DecisionTreeClassifier())
+    ],
+    voting='soft'
+)
+
+voting.fit(X_train, y_train)
+pred_vote = voting.predict(X_test)
+acc_vote = accuracy_score(y_test, pred_vote)
+
+# -------------------------------
+# 5. STACKING CLASSIFIER
+# -------------------------------
+stack = StackingClassifier(
+    estimators=[
+        ('lr', LogisticRegression()),
+        ('svc', SVC(probability=True)),
+    ],
+    final_estimator=DecisionTreeClassifier()
+)
+
+stack.fit(X_train, y_train)
+pred_stack = stack.predict(X_test)
+acc_stack = accuracy_score(y_test, pred_stack)
+
+# -------------------------------
+# 6. Print Comparison
+# -------------------------------
+print("\n--- Ensemble Model Accuracy Comparison ---")
+print("Random Forest (Bagging):", acc_rf)
+print("AdaBoost (Boosting):    ", acc_ada)
+print("Voting Classifier:      ", acc_vote)
+print("Stacking Classifier:    ", acc_stack)

@@ -1,0 +1,32 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+
+# Load dataset
+df = pd.read_csv("crash.csv")    # make sure crash.csv is in the same folder
+
+# Select features and target
+X = df[["age", "speed"]]         # independent variables
+y = df["survived"]               # dependent variable (1=survived, 0=not survived)
+
+# Split dataset (80% training, 20% testing)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=0
+)
+
+# Create and train logistic regression model
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+# Predict on test data
+pred = model.predict(X_test)
+
+# Check accuracy
+accuracy = accuracy_score(y_test, pred)
+print("Model Accuracy:", accuracy)
+
+# Predict survivability for a new sample
+# Example: age = 30, speed = 50 mph
+new_pred = model.predict([[30, 50]])
+print("Survived (1=yes, 0=no):", new_pred[0])

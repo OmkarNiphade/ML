@@ -1,0 +1,29 @@
+import pandas as pd
+from sklearn.datasets import load_boston
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+
+# Load Boston housing dataset
+boston = load_boston()
+df = pd.DataFrame(boston.data, columns=boston.feature_names)
+df["MEDV"] = boston.target   # target (house price)
+
+# Use one feature (RM = average number of rooms)
+X = df[["RM"]]           # independent variable
+y = df["MEDV"]           # dependent variable
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=0
+)
+
+# Build simple linear regression model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Predict on test data
+pred = model.predict(X_test)
+
+print("First 5 Predictions:", pred[:5])
+print("Model Coefficient (Slope):", model.coef_[0])
+print("Model Intercept:", model.intercept_)

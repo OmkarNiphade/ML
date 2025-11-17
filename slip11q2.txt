@@ -1,0 +1,33 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.metrics import accuracy_score
+import matplotlib.pyplot as plt
+
+# Load the Banknote Authentication dataset
+df = pd.read_csv("data_banknote_authentication.csv",
+                 names=["variance", "skewness", "curtosis", "entropy", "class"])
+
+# Features and target
+X = df[["variance", "skewness", "curtosis", "entropy"]]
+y = df["class"]   # 0 = forged, 1 = genuine
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=0
+)
+
+# Decision Tree model
+model = DecisionTreeClassifier()
+model.fit(X_train, y_train)
+
+# Predictions
+pred = model.predict(X_test)
+
+# Accuracy
+print("Model Accuracy:", accuracy_score(y_test, pred))
+
+# Plot tree
+plt.figure(figsize=(12, 6))
+plot_tree(model, feature_names=X.columns, class_names=["Forged", "Genuine"], filled=True)
+plt.show()

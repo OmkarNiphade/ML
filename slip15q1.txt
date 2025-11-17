@@ -1,0 +1,67 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+
+# ------------------------------------
+# 1. Load dataset
+# ------------------------------------
+df = pd.read_csv("house_data.csv")   # Your dataset
+
+# Example columns: area, bedrooms, age, price
+
+# ------------------------------------
+# 2. Create classification target
+# ------------------------------------
+avg_price = df["price"].mean()
+df["label"] = (df["price"] > avg_price).astype(int)   # 1=Above Avg, 0=Below Avg
+
+# Features and target
+X = df[["area", "bedrooms", "age"]]
+y = df["label"]
+
+# ------------------------------------
+# 3. Split + scale data
+# ------------------------------------
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=0
+)
+
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# ------------------------------------
+# 4. Build ANN model
+# ------------------------------------
+model = Sequential([
+    Dense(16, activation='relu', input_dim=3),
+    Dense(8, activation='relu'),
+    Dense(1, activation='sigmoid')   # binary output
+])
+
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+# ------------------------------------
+# 5. Train ANN
+# ------------------------------------
+model.fit(X_train, y_train, epochs=10, batch_size=8)
+
+# ------------------------------------
+# 6. Evaluate ANN
+# ------------------------------------
+loss, acc = model.evaluate(X_test, y_test)
+print("Model Accuracy:", acc)
+
+# ------------------------------------
+# 7. Predict for new house
+# ------------------------------------
+new_house = scaler.transform([[1500, 3, 5]])  # (area, bedrooms, age)
+prediction = model.predict(new_house)[0][0]
+
+if prediction > 0.5:
+    print("Prediction: ABOVE AVERAGE price")
+else:
+    print("Prediction: BELOW AVERAGE price")

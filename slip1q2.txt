@@ -1,0 +1,22 @@
+import pandas as pd
+from sklearn.datasets import load_iris
+import matplotlib.pyplot as plt
+
+# Load iris dataset
+iris = load_iris()
+df = pd.DataFrame(iris.data, columns=iris.feature_names)
+
+# Add categorical target (species)
+df["species"] = iris.target_names[iris.target]
+
+# Convert categorical to numeric
+df["species_num"] = df["species"].astype('category').cat.codes
+
+print(df.head())
+
+# Scatter Plot: Sepal Length vs Sepal Width
+plt.scatter(df["sepal length (cm)"], df["sepal width (cm)"], c=df["species_num"])
+plt.xlabel("Sepal Length")
+plt.ylabel("Sepal Width")
+plt.title("Iris Dataset Scatter Plot")
+plt.show()

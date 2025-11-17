@@ -1,0 +1,27 @@
+import pandas as pd
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+
+# Load employee dataset (example: employee.csv)
+df = pd.read_csv("employee.csv")
+
+# Drop missing values
+df = df.dropna()
+
+# Select income column for clustering
+X = df[["income"]]
+
+# K-Means with 3 income groups
+kmeans = KMeans(n_clusters=3, random_state=0)
+labels = kmeans.fit_predict(X)
+
+# Add cluster labels to dataset
+df["Income_Group"] = labels
+
+print(df.head())
+
+# Plot clusters
+plt.scatter(df["income"], [0]*len(df), c=labels)
+plt.xlabel("Employee Income")
+plt.title("Employee Income Clusters (K-Means)")
+plt.show()
