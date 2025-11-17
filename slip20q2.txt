@@ -1,0 +1,20 @@
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+from sklearn.tree import DecisionTreeClassifier
+
+data = pd.read_csv("tennis.csv")
+
+le = LabelEncoder()
+data["Outlook"] = le.fit_transform(data["Outlook"])
+data["Temperature"] = le.fit_transform(data["Temperature"])
+data["Humidity"] = le.fit_transform(data["Humidity"])
+data["Wind"] = le.fit_transform(data["Wind"])
+data["Play"] = le.fit_transform(data["Play"])
+
+X = data[["Outlook","Temperature","Humidity","Wind"]]
+y = data["Play"]
+
+model = DecisionTreeClassifier()
+model.fit(X, y)
+
+print("Prediction:", model.predict([[1, 2, 0, 1]]))

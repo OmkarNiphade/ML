@@ -1,0 +1,37 @@
+import pandas as pd
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+import matplotlib.pyplot as plt
+
+data = pd.read_csv("employees.csv")
+
+data = data.dropna()
+
+X = data[["Income"]]
+
+wcss = []
+for k in range(1, 10):
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(X)
+    wcss.append(kmeans.inertia_)
+
+plt.plot(range(1, 10), wcss)
+plt.xlabel("K")
+plt.ylabel("WCSS")
+plt.title("Elbow Method")
+plt.show()
+
+sil_scores = {}
+for k in range(2, 10):
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    labels = kmeans.fit_predict(X)
+    sil = silhouette_score(X, labels)
+    sil_scores[k] = sil
+
+best_k = max(sil_scores, key=sil_scores.get)
+print("Best K:", best_k)
+
+kmeans = KMeans(n_clusters=best_k, random_state=42)
+data["Cluster"] = kmeans.fit_predict(X)
+
+print(data.head())

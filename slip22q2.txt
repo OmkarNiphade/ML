@@ -1,0 +1,19 @@
+import pandas as pd
+from mlxtend.preprocessing import TransactionEncoder
+from mlxtend.frequent_patterns import apriori, association_rules
+
+data = []
+with open("groceries.csv", "r") as f:
+    for line in f:
+        data.append(line.strip().split(","))
+
+te = TransactionEncoder()
+te_data = te.fit(data).transform(data)
+df = pd.DataFrame(te_data, columns=te.columns_)
+
+frequent = apriori(df, min_support=0.25, use_colnames=True)
+
+rules = association_rules(frequent, metric="lift", min_threshold=1)
+
+print(frequent)
+print(rules)

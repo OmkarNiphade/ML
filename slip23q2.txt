@@ -1,0 +1,9 @@
+import pandas as pd
+
+data = pd.read_csv("data.csv")
+
+print(data.isnull().sum())
+
+clean_data = data.dropna()
+
+print(clean_data)

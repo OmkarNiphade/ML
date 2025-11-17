@@ -1,0 +1,24 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import Ridge, Lasso
+
+data = pd.read_csv("boston_houses.csv")
+
+X = data[["RM"]]
+y = data["Price"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+ridge = Ridge(alpha=1.0)
+ridge.fit(X_train, y_train)
+
+lasso = Lasso(alpha=0.1)
+lasso.fit(X_train, y_train)
+
+ridge_pred = ridge.predict([[5]])
+lasso_pred = lasso.predict([[5]])
+
+print("Ridge Score:", ridge.score(X_test, y_test))
+print("Lasso Score:", lasso.score(X_test, y_test))
+print("Ridge Prediction for RM=5:", ridge_pred[0])
+print("Lasso Prediction for RM=5:", lasso_pred[0])

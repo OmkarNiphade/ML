@@ -1,0 +1,32 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
+
+data = pd.read_csv("diabetes.csv")
+
+X = data.drop("Outcome", axis=1)
+y = data["Outcome"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+best_k = 1
+best_acc = 0
+
+for k in range(1, 20):
+    model = KNeighborsClassifier(n_neighbors=k)
+    model.fit(X_train, y_train)
+    pred = model.predict(X_test)
+    acc = accuracy_score(y_test, pred)
+    if acc > best_acc:
+        best_acc = acc
+        best_k = k
+
+model = KNeighborsClassifier(n_neighbors=best_k)
+model.fit(X_train, y_train)
+
+print("Optimal K:", best_k)
+print("Accuracy:", best_acc)
+
+new_patient = [[5,116,74,0,0,25.6,0.2,30]]
+print("Prediction for new patient:", model.predict(new_patient)[0])
